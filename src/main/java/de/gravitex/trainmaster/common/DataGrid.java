@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class DataGrid {
+public class DataGrid<T> {
 
 	private HashMap<String, Integer> headersMaxLengths = new HashMap<String, Integer>();
 
@@ -13,9 +13,9 @@ public class DataGrid {
 
 	private DataGridConfiguration configuration;
 
-	private List<Object> entities;
+	private List<T> entities;
 
-	public void print(List<Object> entities) {
+	public void print(List<T> entities) {
 		
 		this.entities = entities;
 		

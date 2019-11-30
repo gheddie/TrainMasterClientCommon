@@ -4,9 +4,9 @@ import java.util.List;
 
 public class RailItemSequcenFormatter {
 
-	public static String format(List<String> identifiers) {
+	public static String format(String trackName, List<String> identifiers) {
 
-		String result = "";
+		String result = "["+trackName+"]::";
 		for (String identifier : identifiers) {
 			result += "["+identifier+"]";
 		}
