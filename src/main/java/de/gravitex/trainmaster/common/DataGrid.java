@@ -7,24 +7,30 @@ import java.util.List;
 
 public class DataGrid {
 
-	private List<String> headers;
-
-	private List<Object> entities;
-
 	private HashMap<String, Integer> headersMaxLengths = new HashMap<String, Integer>();
 
 	private int dividerLength;
 
-	private void print() {
+	private DataGridConfiguration configuration;
 
-		for (int headerIndex = 0; headerIndex < headers.size(); headerIndex++) {
-			headersMaxLengths.put(headers.get(headerIndex), getMaxIndexLength(headerIndex));
+	private List<Object> entities;
+
+	public void print(List<Object> entities) {
+		
+		this.entities = entities;
+		
+		if (configuration.getHeaders() == null) {
+			configuration.guessHeaders(entities.get(0));
+		}
+
+		for (int headerIndex = 0; headerIndex < configuration.getHeaders().size(); headerIndex++) {
+			headersMaxLengths.put(configuration.getHeaders().get(headerIndex), getMaxIndexLength(headerIndex));
 		}
 
 		String divider = generateDivider();
 
 		System.out.println(divider);
-		for (String h : headers) {
+		for (String h : configuration.getHeaders()) {
 			System.out.print("|");
 			System.out.print(extend(h, headersMaxLengths.get(h)));
 		}
@@ -34,7 +40,7 @@ public class DataGrid {
 
 		for (Object e : entities) {
 			System.out.print("|");
-			for (String h : headers) {
+			for (String h : configuration.getHeaders()) {
 				System.out.print(extend(getFieldValue(e, h), headersMaxLengths.get(h)));
 				System.out.print("|");
 			}
@@ -44,10 +50,10 @@ public class DataGrid {
 	}
 
 	private String generateDivider() {
-		for (String h : headers) {
+		for (String h : configuration.getHeaders()) {
 			dividerLength += headersMaxLengths.get(h);
 		}
-		dividerLength += headers.size() + 1;
+		dividerLength += configuration.getHeaders().size() + 1;
 		String div = "";
 		for (int i = 0; i < dividerLength; i++) {
 			div += "-";
@@ -67,12 +73,12 @@ public class DataGrid {
 
 		int maxLength = Integer.MIN_VALUE;
 
-		if (headers.get(index).length() > maxLength) {
-			maxLength = headers.get(index).length();
+		if (configuration.getHeaders().get(index).length() > maxLength) {
+			maxLength = configuration.getHeaders().get(index).length();
 		}
 		String value = null;
 		for (Object e : entities) {
-			value = getFieldValue(e, headers.get(index));
+			value = getFieldValue(e, configuration.getHeaders().get(index));
 			if (value.length() > maxLength) {
 				maxLength = value.length();
 			}
@@ -102,30 +108,8 @@ public class DataGrid {
 		return null;
 	}
 
-	public DataGrid withEntities(List<Object> entities) {
-		this.entities = entities;
+	public DataGrid withConfiguration(DataGridConfiguration configuration) {
+		this.configuration = configuration;
 		return this;
-	}
-
-	public DataGrid withHeaders(List<String> headers) {
-		this.headers = headers;
-		return this;
-	}
-
-	// ---
-
-	public static void main(String[] args) {
-
-		List<String> headers = new ArrayList<String>();
-		headers.add("name");
-		headers.add("value");
-		headers.add("someSubEntity@subInt");
-
-		List<Object> entities = new ArrayList<Object>();
-		entities.add(new DataGridTestEntity("abc", 12, new SomeSubEntity("ej", 1)));
-		entities.add(new DataGridTestEntity("def", 13, new SomeSubEntity("wekrjhwejr", 12)));
-		entities.add(new DataGridTestEntity("ghiwekrjhwekrjhwer", 14, new SomeSubEntity("weree", 12345678)));
-
-		new DataGrid().withHeaders(headers).withEntities(entities).print();
 	}
 }
