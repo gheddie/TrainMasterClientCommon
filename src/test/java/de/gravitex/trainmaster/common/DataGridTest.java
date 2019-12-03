@@ -16,7 +16,7 @@ public class DataGridTest {
 		entities.add(new DataGridTestEntity("ghiwekrjhwekrjhwer", 14, new SomeSubEntity("weree", 12345678)));
 
 		List<String> conf;
-		new DataGrid().withConfiguration(DataGridConfiguration.fromValues(null)).print(entities);
+		new DataGrid().print(entities);
 	}
 
 	@Test

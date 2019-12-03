@@ -19,6 +19,10 @@ public class DataGrid<T> {
 		
 		this.entities = entities;
 		
+		if (configuration == null) {
+			configuration = DataGridConfiguration.fromValues(null);
+		}
+		
 		if (configuration.getHeaders() == null) {
 			configuration.guessHeaders(entities.get(0));
 		}
