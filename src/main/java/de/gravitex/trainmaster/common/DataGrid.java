@@ -1,10 +1,13 @@
 package de.gravitex.trainmaster.common;
 
 import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
 public class DataGrid<T> {
+
+	private static final String SUBVALUE_NULL = "<Hauptwert nicht gesetzt>";
 
 	private HashMap<String, Integer> headersMaxLengths = new HashMap<String, Integer>();
 
@@ -26,8 +29,12 @@ public class DataGrid<T> {
 			configuration.guessHeaders(entities.get(0));
 		}
 
+		String header = null;
+		int maxIndexLength = -1;
 		for (int headerIndex = 0; headerIndex < configuration.getHeaders().size(); headerIndex++) {
-			headersMaxLengths.put(configuration.getHeaders().get(headerIndex), getMaxIndexLength(headerIndex));
+			header = configuration.getHeaders().get(headerIndex);
+			maxIndexLength = getMaxIndexLength(headerIndex);
+			headersMaxLengths.put(header, maxIndexLength);
 		}
 
 		String divider = generateDivider();
@@ -97,6 +104,9 @@ public class DataGrid<T> {
 				Field subField = o.getClass().getDeclaredField(spl[0]);
 				subField.setAccessible(true);
 				Object subValue = subField.get(o);
+				if (subValue == null) {
+					return SUBVALUE_NULL;
+				}
 				declaredField = subValue.getClass().getDeclaredField(spl[1]);
 				declaredField.setAccessible(true);
 				return String.valueOf(declaredField.get(subValue));
@@ -114,5 +124,10 @@ public class DataGrid<T> {
 	public DataGrid withConfiguration(DataGridConfiguration configuration) {
 		this.configuration = configuration;
 		return this;
+	}
+
+	public void printWithHeaders(List<T> entities, String... aHeaders) {
+		withConfiguration(DataGridConfiguration.fromValues(Arrays.asList(aHeaders)));
+		print(entities);
 	}
 }
